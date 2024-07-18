@@ -15,6 +15,10 @@ const categories: Category[] = [
   { id: "5b21ca3eeb7f6fbccd471852", name: "Crime Novel" },
 ];
 
+export function getCategories() {
+  return categories;
+}
+
 router.get("/", (req, res) => {
   return res.send(categories);
 });
@@ -58,9 +62,9 @@ router.put("/:id", (req, res) => {
   if (!validation.success)
     return res.status(400).send(validation.error.issues[0].message);
 
-  category.name = req.body.name;
+  const updatedCategory = (category.name = req.body.name);
 
-  return res.send(category);
+  return res.send(updatedCategory);
 });
 
 router.delete("/:id", (req, res) => {

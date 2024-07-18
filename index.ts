@@ -1,7 +1,10 @@
 import express from "express";
+import categories from "./routes/categories";
 
 const app = express();
 
-const PORT = 5678;
+app.use("/api/categories", categories);
+
+const PORT = 5588;
 
 app.listen(PORT, () => console.log("listening on port " + PORT));

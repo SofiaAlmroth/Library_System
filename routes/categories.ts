@@ -63,10 +63,21 @@ router.put("/:id", (req, res) => {
   return res.send(category);
 });
 
-// router.delete('/:id', (req,res)=>{
-//     const category = categories.find((category) => category.id === req.params.id);
-//     if (!category)
-//       res.status(404).send("The category with the given id was not found");
-// })
+router.delete("/:id", (req, res) => {
+  const category = categories.find((category) => category.id === req.params.id);
+
+  if (!category)
+    return res.status(404).send("The category with the given id was not found");
+
+  //   const itemsUsingCategory = libraryItems.filter((item) => item.category.id === category.id);
+
+  //   if (itemsUsingCategory.length > 0) {
+  //     return res.status(400).send("Cannot delete category because it is being used by some library items.");
+  //   }
+
+  categories.splice(categories.indexOf(category), 1);
+
+  return res.send(category);
+});
 
 export default router;

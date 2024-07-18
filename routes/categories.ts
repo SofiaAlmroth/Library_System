@@ -48,6 +48,21 @@ router.post("/", (req, res) => {
   return res.status(401).send(category);
 });
 
+router.put("/:id", (req, res) => {
+  const category = categories.find((category) => category.id === req.params.id);
+  if (!category)
+    return res.status(404).send("The category with the given id was not found");
+
+  const validation = validate(req.body);
+
+  if (!validation.success)
+    return res.status(400).send(validation.error.issues[0].message);
+
+  category.name = req.body.name;
+
+  return res.send(category);
+});
+
 // router.delete('/:id', (req,res)=>{
 //     const category = categories.find((category) => category.id === req.params.id);
 //     if (!category)

@@ -18,4 +18,12 @@ router.get("/", (req, res) => {
   return res.send(categories);
 });
 
+router.get("/:id", (req, res) => {
+  const category = categories.find((category) => category.id === req.params.id);
+  if (!category)
+    res.status(404).send("The category with the given id was not found");
+
+  return res.send(category);
+});
+
 export default router;

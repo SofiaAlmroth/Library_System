@@ -140,4 +140,19 @@ router.put("/:id", (req, res) => {
   return res.send(libraryItem);
 });
 
+router.delete("/:id", (req, res) => {
+  const libraryItem = libraryItems.find(
+    (libraryItem) => libraryItem.id === req.params.id
+  );
+
+  if (!libraryItem)
+    return res
+      .status(404)
+      .send("The Library item with the given id was not found");
+
+  libraryItems.splice(libraryItems.indexOf(libraryItem), 1);
+
+  return res.send(libraryItem);
+});
+
 export default router;

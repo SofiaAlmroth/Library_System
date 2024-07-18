@@ -3,6 +3,7 @@ import categories from "./routes/categories";
 
 const app = express();
 
+app.use(express.json());
 app.use("/api/categories", categories);
 
 const PORT = 5588;

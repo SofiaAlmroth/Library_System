@@ -1,8 +1,11 @@
 import express from "express";
 import { Category, getCategories } from "./categories";
 import { validate } from "../schemas/LibraryItems";
+import { PrismaClient } from "@prisma/client";
 
 const router = express.Router();
+const prisma = new PrismaClient();
+
 export type BookType = "dvd" | "book" | "audiobook" | "encyclopedia";
 export interface LibraryItems {
   id: string;
@@ -61,12 +64,15 @@ const libraryItems: LibraryItems[] = [
   },
 ];
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  const libraryItems = await prisma.libraryItem.findMany();
   return res.send(libraryItems);
 });
 
-router.get("/:id", (req, res) => {
-  const libraryItem = libraryItems.find((item) => item.id === req.params.id);
+router.get("/:id", async (req, res) => {
+  const libraryItem = await prisma.libraryItem.findFirst({
+    where: { id: req.params.id },
+  });
   if (!libraryItem)
     return res
       .status(404)
@@ -75,39 +81,47 @@ router.get("/:id", (req, res) => {
   return res.send(libraryItem);
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const validation = validate(req.body);
 
   if (!validation.success)
     return res.status(400).send(validation.error.issues[0].message);
 
-  const category = getCategories().find(
-    (category) => category.id === req.body.categoryId
-  );
+  const category = await prisma.category.findFirst({
+    where: { id: req.body.categoryId },
+  });
 
   if (!category)
     return res.status(404).send(`The category with the given id was not found`);
 
-  const libraryItem: LibraryItems = {
-    id: Date.now().toString(),
-    title: req.body.title,
-    nbrPages: req.body.nbrPages,
-    runTimeMinutes: req.body.runTimeMinutes,
-    isBorrowable: req.body.isBorrowable,
-    type: req.body.type,
-    author: req.body.author,
-    borrower: req.body.borrower,
-    category,
-    borrowDate: req.body.borrower ? new Date() : undefined,
-  };
+  let isBorrowable = true;
+  if (req.body.type === "ENCYCLOPEDIA") {
+    isBorrowable = false;
+  }
 
-  libraryItems.push(libraryItem);
+  const libraryItem = await prisma.libraryItem.create({
+    data: {
+      title: req.body.title,
+      type: req.body.type,
+      categoryId: req.body.categoryId,
+      author: req.body.author || null,
+      nbrPages: req.body.nbrPages || null,
+      runTimeMinutes: req.body.runTimeMinutes || null,
+      isBorrowable,
+      borrower: req.body.borrower || null,
+      borrowDate: req.body.borrowDate || null,
+    },
+    include: { category: true },
+  });
 
-  return res.send(libraryItem);
+  return res.status(201).send(libraryItem);
 });
 
-router.put("/:id", (req, res) => {
-  const libraryItem = libraryItems.find((item) => item.id === req.params.id);
+router.put("/:id", async (req, res) => {
+  const libraryItem = await prisma.libraryItem.findFirst({
+    where: { id: req.params.id },
+  });
+
   if (!libraryItem)
     return res
       .status(404)
@@ -118,39 +132,48 @@ router.put("/:id", (req, res) => {
   if (!validation.success)
     return res.status(400).send(validation.error.issues[0].message);
 
-  const category = getCategories().find(
-    (category) => category.id === req.body.categoryId
-  );
+  const category = await prisma.category.findFirst({
+    where: { id: req.body.categoryId },
+  });
 
   if (!category)
     return res.status(404).send(`The category with the given id was not found`);
 
-  libraryItem.title = req.body.title;
-  libraryItem.nbrPages = req.body.nbrPages;
-  libraryItem.runTimeMinutes = req.body.runTimeMinutes;
-  libraryItem.isBorrowable = req.body.isBorrowable;
-  libraryItem.type = req.body.type;
-  libraryItem.author = req.body.author;
-  libraryItem.borrower = req.body.borrower;
-  libraryItem.category;
-  libraryItem.borrowDate = req.body.borrower ? new Date() : undefined;
+  const isBorrowable = req.body.type !== "ENCYCLOPEDIA";
+
+  await prisma.libraryItem.update({
+    where: { id: req.params.id },
+    data: {
+      title: req.body.title,
+      type: req.body.type,
+      categoryId: req.body.categoryId,
+      author: req.body.author || null,
+      nbrPages: req.body.nbrPages || null,
+      runTimeMinutes: req.body.runTimeMinutes || null,
+      isBorrowable,
+      borrower: req.body.borrower || null,
+      borrowDate: req.body.borrowDate || null,
+    },
+  });
 
   return res.send(libraryItem);
 });
 
-router.delete("/:id", (req, res) => {
-  const libraryItem = libraryItems.find(
-    (libraryItem) => libraryItem.id === req.params.id
-  );
+router.delete("/:id", async (req, res) => {
+  const libraryItem = await prisma.libraryItem.findFirst({
+    where: { id: req.params.id },
+  });
 
   if (!libraryItem)
     return res
       .status(404)
-      .send("The Library item with the given id was not found");
+      .send("The library item with the given id was not found");
 
-  libraryItems.splice(libraryItems.indexOf(libraryItem), 1);
+  const deltetedLibraryItem = await prisma.libraryItem.delete({
+    where: { id: req.params.id },
+  });
 
-  return res.send(libraryItem);
+  return res.send(deltetedLibraryItem);
 });
 
 export default router;

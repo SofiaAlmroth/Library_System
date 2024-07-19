@@ -31,9 +31,9 @@ model LibraryItem {
   title          String
   type           BookType
   category       Category  @relation(fields: [categoryId], references: [id])
-  isBorrowable   Boolean   @default(false)
+  isBorrowable   Boolean   @default(true)
   borrower       String?
-  borrowDate     DateTime?
+  borrowDate     DateTime? @default(now())
   categoryId     String
   author         String?
   nbrPages       Int?

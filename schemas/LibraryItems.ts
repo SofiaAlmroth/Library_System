@@ -14,7 +14,7 @@ const schema = z.object({
     .number()
     .gt(0, { message: "Runtime is required" })
     .optional(),
-  isBorrowable: z.boolean(),
+  isBorrowable: z.boolean().optional(),
   borrower: z.string().optional(),
 });
 

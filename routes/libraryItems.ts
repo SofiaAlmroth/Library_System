@@ -1,68 +1,9 @@
 import express from "express";
-import { Category, getCategories } from "./categories";
 import { validate } from "../schemas/LibraryItems";
 import { PrismaClient } from "@prisma/client";
 
 const router = express.Router();
 const prisma = new PrismaClient();
-
-export type BookType = "dvd" | "book" | "audiobook" | "encyclopedia";
-export interface LibraryItems {
-  id: string;
-  type: BookType;
-  title: string;
-  category: Category;
-  isBorrowable: boolean;
-  borrower?: string;
-  borrowDate?: Date;
-  author?: string;
-  nbrPages?: number;
-  runTimeMinutes?: number;
-}
-
-const libraryItems: LibraryItems[] = [
-  {
-    id: "1",
-    type: "book",
-    title: "Example Book",
-    author: "Author Name",
-    nbrPages: 300,
-    isBorrowable: true,
-    category: { id: "5b21ca3eeb7f6fbccd471820", name: "Academic" },
-    borrower: "Sofia Almroth",
-    borrowDate: new Date(),
-  },
-
-  {
-    id: "2",
-    type: "dvd",
-    title: "Example DVD",
-    runTimeMinutes: 120,
-    isBorrowable: true,
-    category: { id: "5b21ca3eeb7f6fbccd471852", name: "Crime Novel" },
-    borrower: "Björn Hultqvist",
-    borrowDate: new Date(),
-  },
-
-  {
-    id: "3",
-    type: "audiobook",
-    title: "Example Audiobook",
-    runTimeMinutes: 500,
-    isBorrowable: true,
-    category: { id: "5b21ca3eeb7f6fbccd471814", name: "Romance" },
-  },
-
-  {
-    id: "4",
-    type: "encyclopedia",
-    title: "Example Encyclopedia",
-    author: "Author Name",
-    nbrPages: 1000,
-    isBorrowable: false,
-    category: { id: "5b21ca3eeb7f6fbccd471818", name: "Science-Fiction" },
-  },
-];
 
 router.get("/", async (req, res) => {
   const libraryItems = await prisma.libraryItem.findMany();

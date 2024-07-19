@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "BookType" AS ENUM ('DVD', 'BOOK', 'AUDIOBOOK', 'ENCYCLOPEDIA');
+CREATE TYPE "BookType" AS ENUM ('DVD', 'NOVEL', 'AUDIONOVEL', 'ENCYCLOPEDIA');
 
 -- CreateTable
 CREATE TABLE "User" (

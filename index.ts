@@ -16,18 +16,12 @@ const PORT = 5588;
 
 app.listen(PORT, () => console.log("listening on port " + PORT));
 
-// async function createLibraryItem() {
-//   const libraryItem = await prisma.libraryItem.create({
-//     data: {
-//       type: "BOOK",
-//       title: "One Day",
-//       categoryId: "clysi9weq00038g6lhsqc5rvg",
-//       isBorrowable: true,
-//       author: "David Nicholls",
-//       nbrPages: 360,
-//     },
-//   });
-//   console.log(libraryItem);
+// async function createCategory(name: string) {
+//   const category = await prisma.category.create({ data: { name } });
+//   console.log(category);
 // }
 
-// createLibraryItem();
+// createCategory("Science-Fiction");
+// createCategory("Romance");
+// createCategory("Academic");
+// createCategory("Crime Novel");

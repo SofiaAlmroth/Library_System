@@ -30,7 +30,8 @@ router.post("/", async (req, res) => {
   const existingCategory = await prisma.category.findUnique({
     where: { name: req.body.name },
   });
-  if (existingCategory) res.status(400).send("The category already exists");
+  if (existingCategory)
+    return res.status(400).send("The category already exists");
 
   const category = await prisma.category.create({
     data: {
@@ -57,7 +58,8 @@ router.put("/:id", async (req, res) => {
   const existingCategory = await prisma.category.findUnique({
     where: { name: req.body.name },
   });
-  if (existingCategory) res.status(400).send("The category already exists");
+  if (existingCategory)
+    return res.status(400).send("The category already exists");
 
   const updatedCategory = await prisma.category.update({
     where: { id: req.params.id },

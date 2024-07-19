@@ -6,13 +6,16 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 router.get("/", async (req, res) => {
-  const libraryItems = await prisma.libraryItem.findMany();
+  const libraryItems = await prisma.libraryItem.findMany({
+    include: { category: true },
+  });
   return res.send(libraryItems);
 });
 
 router.get("/:id", async (req, res) => {
   const libraryItem = await prisma.libraryItem.findFirst({
     where: { id: req.params.id },
+    include: { category: true },
   });
   if (!libraryItem)
     return res
@@ -40,6 +43,8 @@ router.post("/", async (req, res) => {
     isBorrowable = false;
   }
 
+  const borrowDate = req.body.borrower ? new Date() : null;
+
   const libraryItem = await prisma.libraryItem.create({
     data: {
       title: req.body.title,
@@ -50,7 +55,7 @@ router.post("/", async (req, res) => {
       runTimeMinutes: req.body.runTimeMinutes || null,
       isBorrowable,
       borrower: req.body.borrower || null,
-      borrowDate: req.body.borrowDate || null,
+      borrowDate,
     },
     include: { category: true },
   });
@@ -82,7 +87,9 @@ router.put("/:id", async (req, res) => {
 
   const isBorrowable = req.body.type !== "ENCYCLOPEDIA";
 
-  await prisma.libraryItem.update({
+  const borrowDate = req.body.borrower ? new Date() : null;
+
+  const updatedLibraryItem = await prisma.libraryItem.update({
     where: { id: req.params.id },
     data: {
       title: req.body.title,
@@ -93,11 +100,11 @@ router.put("/:id", async (req, res) => {
       runTimeMinutes: req.body.runTimeMinutes || null,
       isBorrowable,
       borrower: req.body.borrower || null,
-      borrowDate: req.body.borrowDate || null,
+      borrowDate,
     },
   });
 
-  return res.send(libraryItem);
+  return res.send(updatedLibraryItem);
 });
 
 router.delete("/:id", async (req, res) => {

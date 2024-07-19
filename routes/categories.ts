@@ -1,7 +1,9 @@
 import express from "express";
 import { validate } from "../schemas/Categories";
+import { PrismaClient } from "@prisma/client";
 
 const router = express.Router();
+const prisma = new PrismaClient();
 
 export interface Category {
   id: string;
@@ -19,41 +21,47 @@ export function getCategories() {
   return categories;
 }
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  const categories = await prisma.category.findMany();
   return res.send(categories);
 });
 
-router.get("/:id", (req, res) => {
-  const category = categories.find((category) => category.id === req.params.id);
+router.get("/:id", async (req, res) => {
+  const category = await prisma.category.findFirst({
+    where: { id: req.params.id },
+  });
+
   if (!category)
     res.status(404).send("The category with the given id was not found");
 
   return res.send(category);
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const validation = validate(req.body);
 
   if (!validation.success)
     return res.status(400).send(validation.error.issues[0].message);
 
-  const existingCategory = categories.find(
-    (category) => category.name === req.body.name
-  );
+  const existingCategory = await prisma.category.findUnique({
+    where: { name: req.body.name },
+  });
   if (existingCategory) res.status(400).send("The category already exists");
 
-  const category: Category = {
-    id: Date.now().toString(),
-    name: req.body.name,
-  };
-
-  categories.push(category);
+  const category = await prisma.category.create({
+    data: {
+      name: req.body.name,
+    },
+  });
 
   return res.status(201).send(category);
 });
 
-router.put("/:id", (req, res) => {
-  const category = categories.find((category) => category.id === req.params.id);
+router.put("/:id", async (req, res) => {
+  const category = await prisma.category.findFirst({
+    where: { id: req.params.id },
+  });
+
   if (!category)
     return res.status(404).send("The category with the given id was not found");
 
@@ -62,26 +70,46 @@ router.put("/:id", (req, res) => {
   if (!validation.success)
     return res.status(400).send(validation.error.issues[0].message);
 
-  const updatedCategory = (category.name = req.body.name);
+  const existingCategory = await prisma.category.findUnique({
+    where: { name: req.body.name },
+  });
+  if (existingCategory) res.status(400).send("The category already exists");
+
+  const updatedCategory = await prisma.category.update({
+    where: { id: req.params.id },
+    data: {
+      name: req.body.name,
+    },
+  });
 
   return res.send(updatedCategory);
 });
 
-router.delete("/:id", (req, res) => {
-  const category = categories.find((category) => category.id === req.params.id);
+router.delete("/:id", async (req, res) => {
+  const category = await prisma.category.findFirst({
+    where: { id: req.params.id },
+  });
 
   if (!category)
     return res.status(404).send("The category with the given id was not found");
 
-  //   const itemsUsingCategory = libraryItems.filter((item) => item.category.id === category.id);
+  const itemsUsingCategory = await prisma.libraryItem.findMany({
+    where: { categoryId: req.params.id },
+  });
 
-  //   if (itemsUsingCategory.length > 0) {
-  //     return res.status(400).send("Cannot delete category because it is being used by some library items.");
-  //   }
+  if (itemsUsingCategory.length > 0) {
+    return res
+      .status(400)
+      .send(
+        "Cannot delete category because it is being used by some library items."
+      );
+  }
 
-  categories.splice(categories.indexOf(category), 1);
+  const deletedCategory = await prisma.category.delete({
+    where: { id: req.params.id },
+  });
 
-  return res.send(category);
+  return res.send(deletedCategory);
 });
 
 export default router;

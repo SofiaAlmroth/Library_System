@@ -49,7 +49,7 @@ router.post("/", (req, res) => {
 
   categories.push(category);
 
-  return res.status(401).send(category);
+  return res.status(201).send(category);
 });
 
 router.put("/:id", (req, res) => {

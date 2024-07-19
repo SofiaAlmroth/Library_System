@@ -3,15 +3,15 @@ import { Category, getCategories } from "./categories";
 import { validate } from "../schemas/LibraryItems";
 
 const router = express.Router();
-
+export type BookType = "dvd" | "book" | "audiobook" | "encyclopedia";
 export interface LibraryItems {
   id: string;
-  type: "dvd" | "book" | "audiobook" | "encyclopedia";
+  type: BookType;
   title: string;
   category: Category;
   isBorrowable: boolean;
   borrower?: string;
-  borrowDate?: string;
+  borrowDate?: Date;
   author?: string;
   nbrPages?: number;
   runTimeMinutes?: number;
@@ -27,7 +27,7 @@ const libraryItems: LibraryItems[] = [
     isBorrowable: true,
     category: { id: "5b21ca3eeb7f6fbccd471820", name: "Academic" },
     borrower: "Sofia Almroth",
-    borrowDate: new Date().toISOString(),
+    borrowDate: new Date(),
   },
 
   {
@@ -38,7 +38,7 @@ const libraryItems: LibraryItems[] = [
     isBorrowable: true,
     category: { id: "5b21ca3eeb7f6fbccd471852", name: "Crime Novel" },
     borrower: "Björn Hultqvist",
-    borrowDate: new Date().toISOString(),
+    borrowDate: new Date(),
   },
 
   {
@@ -98,7 +98,7 @@ router.post("/", (req, res) => {
     author: req.body.author,
     borrower: req.body.borrower,
     category,
-    borrowDate: req.body.borrower ? new Date().toISOString() : undefined,
+    borrowDate: req.body.borrower ? new Date() : undefined,
   };
 
   libraryItems.push(libraryItem);
@@ -133,9 +133,7 @@ router.put("/:id", (req, res) => {
   libraryItem.author = req.body.author;
   libraryItem.borrower = req.body.borrower;
   libraryItem.category;
-  libraryItem.borrowDate = req.body.borrower
-    ? new Date().toISOString()
-    : undefined;
+  libraryItem.borrowDate = req.body.borrower ? new Date() : undefined;
 
   return res.send(libraryItem);
 });

@@ -7,7 +7,15 @@ import cors from "cors";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:4173/",
+      "https://library-system-fe.onrender.com",
+    ],
+  })
+);
 app.use(express.json());
 app.use("/api/categories", categories);
 app.use("/api/libraryItems", libraryItems);
@@ -17,5 +25,3 @@ app.use("/api/auth", auth);
 const PORT = process.env.PORT || 5689;
 
 app.listen(PORT, () => console.log("listening on port " + PORT));
-
-//{ origin: ["http://localhost:5173", "http://localhost:4173/"] }

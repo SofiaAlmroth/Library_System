@@ -16,5 +16,5 @@ app.use("/api/categories", categories_1.default);
 app.use("/api/libraryItems", libraryItems_1.default);
 app.use("/api/users", users_1.default);
 app.use("/api/auth", auth_1.default);
-const PORT = 5589;
+const PORT = 5689;
 app.listen(PORT, () => console.log("listening on port " + PORT));

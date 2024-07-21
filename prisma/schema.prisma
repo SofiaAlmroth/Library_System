@@ -42,7 +42,7 @@ model LibraryItem {
 
 enum BookType {
   DVD
-  NOVEL
+  BOOK
   AUDIOBOOK
   ENCYCLOPEDIA
 }

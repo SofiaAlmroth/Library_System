@@ -14,6 +14,6 @@ app.use("/api/libraryItems", libraryItems);
 app.use("/api/users", users);
 app.use("/api/auth", auth);
 
-const PORT = 5689;
+const PORT = process.env.PORT || 5689;
 
 app.listen(PORT, () => console.log("listening on port " + PORT));

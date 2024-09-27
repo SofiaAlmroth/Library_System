@@ -85,6 +85,16 @@ POST /items
 }
 ```
 
+### Response
+```json
+{
+  "id": 3,
+  "title": "Clean Code",
+  "type": "book",
+  "category": "Programming",
+  "isBorrowable": true
+}
+```
 
 ### Borrow an Item Example
 ```bash
@@ -103,7 +113,18 @@ PUT /items/1/borrow
   "borrowDate": "2024-09-25"
 }
 ```
-
+### Response
+```json
+{
+  "id": 1,
+  "title": "JavaScript: The Good Parts",
+  "type": "book",
+  "category": "Programming",
+  "isBorrowable": false,
+  "borrower": "Jane Doe",
+  "borrowDate": "2024-09-25"
+}
+```
 ### Environment Variables
 
 To run this project, you will need to set the following environment variables in your .env file:
@@ -149,4 +170,5 @@ The server will be running on http://localhost:your_port.
 - Implement authentication: Add user authentication and authorization for accessing specific endpoints.
 - Caching: Implement caching for API responses to improve performance for repeated requests.
 - Add pagination: Include pagination for large data sets.
+- **React Query**: Use React Query in the frontend to handle server-side data fetching, caching, and updating the UI in real-time. This will make the app more performant and reduce the need for manual API call management.
 ```

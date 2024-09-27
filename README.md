@@ -2,6 +2,13 @@
 
 This is the backend of the Library System project. The backend handles data management for library items such as books, DVDs, and audiobooks, and provides the necessary API endpoints for the frontend.
 
+### Important Note
+This backend is built to work with the [Library System Frontend](https://github.com/SofiaAlmroth/library_system_FE). To fully utilize this project, ensure that the backend and frontend are both running and configured properly.
+
+Make sure the frontend's `REACT_APP_BACKEND_URL=` points to the correct URL where this backend is running:
+- For local development: `http://localhost:5689`
+- For production: `https://library-system-90kk.onrender.com`
+
 ## Tech Stack
 
 - **Node.js**: JavaScript runtime
@@ -127,12 +134,11 @@ PUT /items/1/borrow
 ```
 ### Environment Variables
 
-To run this project, you will need to set the following environment variables in your .env file:
+To run this project, you will need to set the following environment variables in your `.env` file:
 
 ```env
-
-DATABASE_URL=your_database_url
-PORT=your_port_number
+DATABASE_URL="postgres://default:5vkblV1zTAYg@ep-weathered-credit-a2ibyaum-pooler.eu-central-1.aws.neon.tech:5432/verceldb?sslmode=require&pgbouncer=true&connect_timeout=15"
+PORT=5689
 ```
 
 
@@ -140,8 +146,8 @@ PORT=your_port_number
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/SofiaAlmroth/logistic_app_BE.git
-cd logistic_app_BE
+git clone https://github.com/SofiaAlmroth/library_system_BE.git
+cd library_system_BE
 ```
 
 
@@ -164,7 +170,7 @@ npx prisma migrate dev
 ```bash
 npm start
 ```
-The server will be running on http://localhost:your_port.
+The server will be running on http://localhost:5689.
 
 ### Future Improvements
 - Implement authentication: Add user authentication and authorization for accessing specific endpoints.
